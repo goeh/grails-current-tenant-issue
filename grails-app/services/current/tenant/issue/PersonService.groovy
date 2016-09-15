@@ -1,7 +1,6 @@
 package current.tenant.issue
 
 import grails.core.GrailsApplication
-import grails.gorm.multitenancy.Tenants
 import groovy.transform.CompileStatic
 import org.springframework.beans.factory.annotation.Autowired
 

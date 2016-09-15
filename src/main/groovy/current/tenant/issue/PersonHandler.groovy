@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component
 class PersonHandler {
 
     Person getPerson(long tenant, String firstName, String lastName) {
-        (Person) Tenants.withId(tenant) {
+        Tenants.withId(tenant) {
             Person.createCriteria().get {
                 eq 'firstName', firstName
                 eq 'lastName', lastName
             }
-        }
+        } as Person
     }
 
     Person createWithCar(long tenant, String firstName, String lastName, String make, String model) {
