@@ -16,11 +16,39 @@ class CurrentTenantSpec extends Specification {
     @Autowired
     PersonService personService
 
-    void "test current tenant"() {
+    void "without nested calls to withTenant"() {
         when:
         def person1 = personService.createPersonWithCar(1, "Lisa", "Long", "Volvo", "XC60")
         def person2 = personService.createPersonWithCar(2, "Lisa", "Long", "Volvo", "XC70")
         def person3 = personService.createPersonWithCar(3, "Lisa", "Long", "Volvo", "XC90")
+
+        then:
+        person1.tenantId == 1L
+        person1.cars.size() == 1
+        person1.oneCar.toString() == "Volvo XC60"
+
+        person2.tenantId == 2L
+        person2.cars.size() == 1
+        person2.oneCar.toString() == "Volvo XC70"
+
+        person3.tenantId == 3L
+        person3.cars.size() == 1
+        person3.oneCar.toString() == "Volvo XC90"
+
+        and:
+        Tenants.withId(1L) { Person.count() == 1 }
+        Tenants.withId(2L) { Person.count() == 1 }
+        Tenants.withId(3L) { Person.count() == 1 }
+
+        and:
+        Tenants.withoutId { Person.count() == 3 }
+    }
+
+    void "nested calls to withTenant"() {
+        when:
+        def person1 = personService.createPersonWithCarNested(1, "George", "Long", "Volvo", "XC60")
+        def person2 = personService.createPersonWithCarNested(2, "George", "Long", "Volvo", "XC70")
+        def person3 = personService.createPersonWithCarNested(3, "George", "Long", "Volvo", "XC90")
 
         then:
         person1.tenantId == 1L
